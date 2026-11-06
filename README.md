@@ -1,357 +1,473 @@
-SENTINEL
-Personal Digital Identity Firewall
-“Before you trust a website with your identity, SENTINEL checks whether you should.”
+# 🛡️ SENTINEL
 
-SENTINEL is a hackathon-ready cybersecurity MVP combining a Chrome Manifest V3 extension, FastAPI backend, SQLite event storage, explainable risk scoring, Scam DNA classification, protected-identity concepts, and an optional local Ollama AI security analyst.
+## Personal Digital Identity Firewall
 
-The goal is simple:
+> **“Before you trust a website with your identity, SENTINEL checks whether you should.”**
 
-Don't just detect a scam. Understand the threat behind it and protect the user's digital identity before sensitive information is submitted.
+SENTINEL is a **browser-based digital identity protection and scam intelligence platform** designed to detect suspicious websites, phishing attempts, brand impersonation, scam campaigns, and identity-targeting threats **before users submit sensitive information**.
 
-🚀 What is SENTINEL?
-SENTINEL is a personal browser security and scam-intelligence platform built around three connected components:
+Instead of simply asking:
 
-                    SENTINEL
+> ❌ *“Is this website malicious?”*
+
+SENTINEL asks:
+
+> 🧠 **“Is this website trying to steal my identity, and what is the attack pattern behind it?”**
+
+The platform combines a **Chrome/Chromium browser extension**, **FastAPI risk engine**, **threat intelligence**, **Scam DNA analysis**, **scam-network visualization**, **protected identity monitoring**, and an optional **local AI security analyst**.
+
+---
+
+# 🚨 The Problem
+
+Modern phishing attacks are becoming increasingly sophisticated.
+
+Attackers can create websites that:
+
+- Look almost identical to legitimate services
+- Impersonate popular brands
+- Use shortened or suspicious URLs
+- Redirect users through multiple domains
+- Ask for passwords, emails, phone numbers, or other identity information
+- Use urgency and social-engineering language
+- Reuse the same infrastructure across multiple scams
+- Operate as coordinated scam campaigns
+
+Traditional browser warnings often focus on whether a URL is known to be malicious.
+
+But a newly created phishing website may not yet exist in a blacklist.
+
+### SENTINEL takes a different approach.
+
+It analyzes the **behavior and characteristics of a website in real time** and produces an explainable risk score.
+
+---
+
+# 💡 SENTINEL's Solution
+
+SENTINEL acts as a **Personal Digital Identity Firewall** between the user and suspicious websites.
+
+```text
+                     USER
                        │
-          ┌────────────┼────────────┐
-          │            │            │
-          ▼            ▼            ▼
-     Web Security   Chrome      FastAPI Risk
-       Center      Extension       Engine
-                      │               │
-                      └───────┬───────┘
-                              │
-                ┌─────────────┼─────────────┐
-                ▼             ▼             ▼
-          Risk Engine    Identity       Threat
-                         Firewall     Intelligence
-                              │
-                  ┌───────────┼───────────┐
-                  ▼           ▼           ▼
-              Scam DNA   Scam Network   Local AI
-Web Security Center
-The central investigation and control interface.
+                       ▼
+              ┌─────────────────┐
+              │ Chrome Browser  │
+              └────────┬────────┘
+                       │
+                       ▼
+             ┌──────────────────┐
+             │ SENTINEL Shield  │
+             │ Browser Extension│
+             └────────┬─────────┘
+                      │
+                      ▼
+             ┌──────────────────┐
+             │ FastAPI Risk     │
+             │ Intelligence     │
+             │ Engine           │
+             └────────┬─────────┘
+                      │
+        ┌─────────────┼─────────────┐
+        ▼             ▼             ▼
+   Risk Analysis   Identity     Threat Intel
+                   Firewall
+        │             │             │
+        └─────────────┼─────────────┘
+                      ▼
+              Scam DNA Analysis
+                      │
+                      ▼
+              Scam Network Graph
+                      │
+                      ▼
+              Local AI Analyst
+                      │
+                      ▼
+             Security Center
+```
 
-Users can:
+---
 
-Analyze suspicious URLs
-View risk scores
-Inspect security signals
-View scan history
-Monitor security statistics
-Investigate threats
-Analyze suspicious messages/emails/QR-related inputs
-Review identity security
-Request AI-powered explanations
-Chrome/Chromium Browser Shield
-The browser extension provides real-time protection while browsing.
+# ✨ Core Features
 
-It can:
+## 1. 🛡️ Real-Time Browser Shield
 
-Analyze visited URLs
-Collect sanitized page signals
-Detect login pages
-Detect password/email/phone fields
-Calculate per-site identity risk
-Display risk information
-Show warnings for high-risk pages
-Communicate with the FastAPI backend
-FastAPI Risk Engine
-The backend performs the core security analysis.
+The Chrome/Chromium extension analyzes the current website and communicates with the SENTINEL backend.
 
-It handles:
+It can detect:
 
-URL normalization
-Domain analysis
-Risk scoring
-Suspicious keyword detection
-Brand impersonation detection
-Lookalike/typosquatting heuristics
-Login-page detection
-Identity-risk signals
-Redirect analysis
-Threat classification
-Scan history
-Scam DNA fingerprinting
-Local AI explanations
-🛡️ Current MVP
-The current SENTINEL MVP includes:
+- Suspicious URLs
+- Missing HTTPS
+- IP-based URLs
+- Suspicious TLDs
+- Excessive subdomains
+- Multiple hyphens
+- Punycode domains
+- Login pages
+- Password fields
+- Email/phone fields
+- Redirect chains
+- Suspicious keywords
+- Brand impersonation
+- Lookalike domains
+- Protected identity exposure
 
-✅ FastAPI risk engine
-✅ Explainable 0–100 risk score
-✅ Risk classification
-✅ Scam classification
-✅ Brand impersonation detection
-✅ Lookalike/typosquatting heuristics
-✅ Login/password-field signal support
-✅ SQLite scan history
-✅ Security dashboard
-✅ Chrome Manifest V3 extension
-✅ Chrome extension popup
-✅ Automatic page signal collection
-✅ High-risk warning overlay
-✅ Protected identity concepts
-✅ Popup identity-field inventory
-✅ Per-site identity risk
-✅ Scam DNA fingerprint matching
-✅ Related-domain clustering
-✅ Local Ollama AI explanation
-✅ Deterministic AI explanation fallback
-✅ Offline popup explanation fallback
-✅ Email/message/QR analysis workflows
-✅ Safe demo scenarios
-✅ Web + extension + backend integration
-🎯 Core Risk Model
-SENTINEL uses a simple, explainable 0–100 risk score.
+The extension provides an immediate risk assessment.
 
-Score	Risk Level	Meaning
-0–30	🟢 LOW RISK	No major suspicious indicators
-31–50	🟡 SUSPICIOUS	Some security concerns detected
-51–75	🟠 HIGH RISK	Multiple strong warning indicators
-76–100	🔴 DANGEROUS	Strong evidence of phishing/scam behavior
-Example:
+---
 
-https://google.com
+# 2. 🎯 Explainable Risk Engine
 
-Score:          0
-Risk Level:     LOW RISK
-Classification: SAFE
-Synthetic phishing demo:
+SENTINEL does not simply return:
 
-http://paypal-login-security.com/verify/account
+```text
+MALICIOUS
+```
 
-Score:          100
-Risk Level:     DANGEROUS
-Classification: PHISHING
-🔍 Security Signals
-SENTINEL combines multiple explainable signals instead of relying on one indicator.
+Instead, it calculates a risk score based on multiple signals.
 
-URL and Domain Signals
-Missing HTTPS
-IP-address URLs
-Multiple hyphens
-Excessive subdomains
-Punycode/IDN domains
-Suspicious TLDs
-Suspicious keywords
-Login/sign-in paths
-Redirect chains
-Identity Signals
-Login page detected
-Password field detected
-Email field detected
-Phone field detected
-Protected identity requested
-Identity-targeting behavior
-Brand Protection
-SENTINEL detects potential:
+### Risk Scale
 
-Brand impersonation
-Lookalike domains
-Typosquatting patterns
-Suspicious brand references
-Legitimate official domains and subdomains are handled separately from suspicious lookalikes.
+| Score | Risk Level | Meaning |
+|---:|---|---|
+| 0–30 | 🟢 LOW RISK | No significant threat detected |
+| 31–50 | 🟡 SUSPICIOUS | Some unusual characteristics detected |
+| 51–75 | 🟠 HIGH RISK | Strong indicators of malicious behavior |
+| 76–100 | 🔴 DANGEROUS | High-confidence phishing/scam indicators |
 
-🧬 Scam DNA
-Traditional phishing detection asks:
+### Example Signals
 
-“Is this URL dangerous?”
+| Signal | Weight |
+|---|---:|
+| HTTP instead of HTTPS | +15 |
+| IP address used as domain | +20 |
+| Multiple hyphens | +10 |
+| Excessive subdomains | +10 |
+| Punycode | +20 |
+| Suspicious TLD | +10 |
+| Login path | +15 |
+| Password field detected | +20 |
+| Protected identity detected | +15 |
+| Redirect chain | +10 |
+| Urgency indicators | +10 |
+| Suspicious keywords | +6 each |
+| Brand impersonation | +30 |
+| Lookalike brand | +25 |
 
-SENTINEL goes one step further.
+The final score is capped at **100**.
 
-Scam DNA asks:
-“What characteristics does this scam share with other scams?”
+---
 
-A scam fingerprint can contain characteristics such as:
+# 3. 🏢 Brand Impersonation Detection
 
-Domain structure
-Suspicious keywords
-Brand impersonation
-URL patterns
-Redirect behavior
-Login-page characteristics
-Identity targeting
-Scam language
-Other security indicators
-This allows SENTINEL to identify related suspicious domains and campaign patterns.
+Attackers frequently create fake websites pretending to be trusted companies.
 
-Scam URL
-   │
-   ▼
-Extract Signals
-   │
-   ▼
-Create Scam DNA Fingerprint
-   │
-   ▼
-Compare With Known Patterns
-   │
-   ▼
-Find Related Domains / Campaigns
-🕸️ Scam Network Intelligence
-SENTINEL models relationships between suspicious entities.
+SENTINEL maintains a brand intelligence database containing services such as:
 
-             ┌──────────────┐
-             │   Campaign   │
-             └──────┬───────┘
-                    │
-        ┌───────────┼───────────┐
-        │           │           │
-        ▼           ▼           ▼
-     Domain       Brand        URL
-        │                       │
-        ▼                       ▼
-   Redirects              Login Page
-        │                       │
-        └───────────┬───────────┘
-                    ▼
-              Identity Target
-The investigation can therefore move from:
-
-URL
- ↓
-Threat
- ↓
-Campaign
- ↓
-Network
-instead of treating every suspicious URL as an isolated event.
-
-🧠 Local AI Security Analyst
-SENTINEL optionally integrates with Ollama for local AI-powered security explanations.
-
-The AI analyst can explain:
-
-Why a website is risky
-Which signals contributed to the score
-What the detected threat means
-What the user should do next
-Why a domain may be impersonating a brand
-What suspicious characteristics were detected
-Example:
-
-User:
-Why is this website dangerous?
-
-SENTINEL AI:
-The website uses a suspicious domain pattern,
-contains a login path, requests identity information,
-and appears to imitate a known brand.
-Avoid entering credentials and leave the page.
-Local-first architecture
-SENTINEL
-   │
-   ├── Ollama available
-   │       ↓
-   │   Local AI analysis
-   │
-   └── Ollama unavailable
-           ↓
-      Deterministic fallback
-This allows SENTINEL to remain functional without paid cloud AI APIs.
-
-🔐 Privacy by Design
-SENTINEL follows the principle:
-
-Protect the identity without collecting the identity.
-
-The extension does not need:
-
-❌ Password values
-❌ OTPs
-❌ PINs
-❌ CVVs
-❌ Banking credentials
-❌ Cookies
-❌ Authentication tokens
-The browser extension sends only the URL and sanitized page metadata/security signals required for analysis.
+- Google
+- Microsoft
+- Apple
+- PayPal
+- Amazon
+- Meta
+- Facebook
+- Instagram
+- WhatsApp
+- Netflix
+- GitHub
+- LinkedIn
 
 For example:
 
-Allowed:
-URL
-Login detected = true
-Password field detected = true
-Email field detected = true
-Page title
-Sanitized security signals
+```text
+google.com
+        ↓
+Trusted
 
-Not collected:
-Actual password
-Actual OTP
-Actual PIN
-Actual card number
-Authentication token
-🖥️ Security Center
-The Security Center is the main investigation interface.
+google-security-login.example
+        ↓
+Potential impersonation
+```
 
-It can provide:
+SENTINEL distinguishes legitimate domains from suspicious lookalikes and subdomains.
 
-Overall security statistics
-Recent scans
-Risk distribution
-Threat history
-URL investigation
-Identity security status
-Scam DNA information
-Related-domain information
-AI security analysis
-Additional security analyzers
-The dashboard is intended to answer three questions:
+---
 
-1. What happened?
-2. Why is it dangerous?
-3. What should I do?
-🧰 Advanced Security Tools
-The MVP includes additional investigation workflows such as:
+# 4. 🧬 Scam DNA
 
-URL Analyzer
-Analyze a URL and receive:
+SENTINEL goes beyond individual URL detection.
 
-Risk score
-Classification
-Security reasons
-Detected signals
-Confidence
-Email Analyzer
-Analyze suspicious email content for scam/phishing indicators.
+Multiple scam websites can share similar characteristics.
 
-Message Analyzer
-Analyze suspicious SMS/message content.
+The **Scam DNA engine** extracts patterns such as:
 
-QR Analyzer
-Support analysis of QR-related scam inputs.
+- Domain structure
+- Suspicious keywords
+- Brand targets
+- URL structure
+- Redirect behavior
+- Infrastructure indicators
+- Identity collection behavior
+- Social-engineering signals
 
-Identity Risk
-Show what identity-related fields a site is requesting and calculate the associated risk.
+This allows multiple attacks to be grouped into potential campaigns.
 
-🔌 API
-Core Endpoints
-Method	Endpoint	Purpose
-GET	/	API/project information
-GET	/dashboard	Security dashboard
-GET	/api/health	Backend health
-GET	/api/risk-rules	Risk rules
-POST	/api/analyze	Analyze URL/page
-GET	/api/history	Scan history
-GET	/api/stats	Security statistics
-POST	/api/identity/register	Register protected identity
-GET	/api/identity/status	Identity protection status
-POST	/api/ai/explain	AI security explanation
-POST	/api/analyze/email	Analyze email
-POST	/api/analyze/message	Analyze message
-POST	/api/analyze/qr	Analyze QR input
-Interactive API documentation:
+### Example
 
-http://127.0.0.1:8000/docs
-📁 Project Structure
+```text
+Scam A
+ ├── Fake PayPal
+ ├── Urgent verification
+ └── Password collection
+
+Scam B
+ ├── Fake PayPal
+ ├── Urgent verification
+ └── Password collection
+
+Scam C
+ ├── Fake PayPal
+ ├── Urgent verification
+ └── Password collection
+
+              ↓
+
+       Same Scam DNA
+              ↓
+
+       Potential Campaign
+```
+
+---
+
+# 5. 🕸️ Scam Network
+
+SENTINEL represents relationships between suspicious entities as a graph.
+
+```text
+                 ┌──────────────┐
+                 │ Fake PayPal  │
+                 └──────┬───────┘
+                        │
+              ┌─────────┼─────────┐
+              ▼         ▼         ▼
+         Domain A   Domain B   Domain C
+              │         │         │
+              └────┬────┴────┬────┘
+                   ▼         ▼
+              Same Pattern  Same Brand
+                   │
+                   ▼
+             Scam Campaign
+```
+
+The goal is to move from:
+
+> **“This URL looks suspicious.”**
+
+to:
+
+> **“These suspicious websites may belong to the same coordinated campaign.”**
+
+---
+
+# 6. 🔐 Protected Identity Firewall
+
+SENTINEL is designed around **identity protection**, not credential collection.
+
+The browser extension can detect the presence of:
+
+- Login fields
+- Password fields
+- Email fields
+- Phone-number fields
+
+without collecting the actual values.
+
+### SENTINEL NEVER collects:
+
+❌ Passwords  
+❌ OTPs  
+❌ PINs  
+❌ Banking credentials  
+❌ Authentication codes  
+
+The protected identity layer is intended to warn users when a suspicious website attempts to collect identity information.
+
+---
+
+# 7. 🤖 Local AI Security Analyst
+
+SENTINEL can optionally use a **local Ollama model** to explain detected threats.
+
+Instead of simply displaying:
+
+```text
+Risk Score: 87
+```
+
+the AI analyst can explain:
+
+```text
+This website is high risk because:
+
+• It uses a suspicious domain structure.
+• It attempts to imitate a known brand.
+• A login page was detected.
+• Password collection was detected.
+• Multiple phishing indicators were found.
+
+Recommendation:
+Do not enter credentials or personal information.
+```
+
+The local AI architecture allows SENTINEL to work without requiring paid cloud AI APIs.
+
+---
+
+# 8. 📊 Security Center
+
+The web dashboard acts as the central investigation interface.
+
+It provides:
+
+- Current threat status
+- Risk scores
+- Scan history
+- Threat statistics
+- Identity protection status
+- Scam intelligence
+- Threat explanations
+- Security analytics
+
+Architecture:
+
+```text
+Chrome Extension
+       │
+       ▼
+FastAPI Backend
+       │
+       ├── Risk Engine
+       ├── Identity Firewall
+       ├── Threat Intelligence
+       ├── Scam DNA
+       ├── Scam Network
+       └── AI Analyst
+       │
+       ▼
+Security Center
+```
+
+---
+
+# 🔎 Advanced Security Tools
+
+SENTINEL also provides analyzers for different types of suspicious content.
+
+### URL Analyzer
+
+Analyze:
+
+```text
+https://example.com/login
+```
+
+and receive:
+
+- Risk score
+- Risk classification
+- Detection reasons
+- Threat signals
+- Brand analysis
+
+### Email Analyzer
+
+Analyze suspicious email content for:
+
+- Urgency
+- Credential requests
+- Suspicious links
+- Scam language
+- Brand impersonation
+
+### Message Analyzer
+
+Analyze suspicious:
+
+- SMS messages
+- Chat messages
+- Social-media messages
+
+### QR Analyzer
+
+Analyze QR-code destinations before visiting them.
+
+### Screenshot Analysis
+
+Future-facing interface for analyzing screenshots of suspicious websites or messages.
+
+---
+
+# 🧠 Architecture
+
+```text
+┌─────────────────────────────────────────────────────┐
+│                    SENTINEL                         │
+│         Personal Digital Identity Firewall          │
+└────────────────────────┬────────────────────────────┘
+                         │
+          ┌──────────────┴──────────────┐
+          │                             │
+          ▼                             ▼
+┌───────────────────┐          ┌────────────────────┐
+│ Chrome Extension  │          │ Security Center    │
+│                   │          │ Web Dashboard      │
+└─────────┬─────────┘          └─────────┬──────────┘
+          │                              │
+          └──────────────┬───────────────┘
+                         ▼
+                ┌─────────────────┐
+                │ FastAPI Backend │
+                └────────┬────────┘
+                         │
+       ┌─────────────────┼──────────────────┐
+       │                 │                  │
+       ▼                 ▼                  ▼
+┌────────────┐    ┌──────────────┐   ┌──────────────┐
+│ Risk       │    │ Identity     │   │ Threat       │
+│ Engine     │    │ Firewall     │   │ Intelligence │
+└─────┬──────┘    └──────┬───────┘   └──────┬───────┘
+      │                  │                  │
+      └──────────────────┼──────────────────┘
+                         ▼
+                 ┌──────────────┐
+                 │ Scam DNA     │
+                 └──────┬───────┘
+                        ▼
+                 ┌──────────────┐
+                 │ Scam Network │
+                 └──────┬───────┘
+                        ▼
+                 ┌──────────────┐
+                 │ Local AI     │
+                 │ Analyst      │
+                 └──────────────┘
+```
+
+---
+
+# 📁 Project Structure
+
+```text
 SENTINEL/
 │
 ├── backend/
-│   ├── .venv/
 │   ├── main.py
 │   ├── requirements.txt
-│   └── sentinel.db
+│   ├── sentinel.db
+│   └── .venv/
 │
 ├── extension/
 │   ├── manifest.json
@@ -364,429 +480,543 @@ SENTINEL/
 ├── frontend/
 │   └── index.html
 │
-├── .gitignore
+├── run.sh
 ├── README.md
-└── run.sh
-⚙️ Technology Stack
-Frontend
-HTML
-CSS
-JavaScript
-Browser Extension
-Chrome Manifest V3
-JavaScript
-Content Scripts
-Background Service Worker
-Chrome Extension APIs
-Backend
-Python
-FastAPI
-Uvicorn
-Pydantic
-SQLite
-HTTPX
-AI
-Ollama
-Local LLMs
-Security Intelligence
-Rule-based analysis
-Domain intelligence
-Brand detection
-Risk scoring
-Scam DNA
-Related-domain clustering
-Threat classification
-🚀 Installation
-Requirements
-Install:
+└── .gitignore
+```
 
-Python 3.10+
-Google Chrome or Chromium
-Git
-Ollama (optional)
-Clone Repository
+---
+
+# ⚙️ Technology Stack
+
+### Frontend
+
+- HTML
+- CSS
+- JavaScript
+
+### Browser Protection
+
+- Chrome Extension
+- Manifest V3
+- Content Scripts
+- Background Service Worker
+
+### Backend
+
+- Python
+- FastAPI
+- Uvicorn
+- Pydantic
+- HTTPX
+
+### Database
+
+- SQLite
+
+### AI
+
+- Ollama
+- Local LLM
+
+### Development
+
+- Git
+- GitHub
+- VS Code
+- WSL / Ubuntu
+
+---
+
+# 🚀 Installation
+
+## 1. Clone the repository
+
+```bash
 git clone https://github.com/nidhiraj029/SENTINEL.git
 cd SENTINEL
-Start Backend
-Option 1 — Using run.sh
+```
+
+---
+
+## 2. Start the backend
+
+```bash
+chmod +x run.sh
 ./run.sh
-Option 2 — Manually
-cd backend
+```
 
-python3 -m venv .venv
-source .venv/bin/activate
+The backend runs on:
 
-pip install -r requirements.txt
-
-uvicorn main:app --reload --host 127.0.0.1 --port 8000
-Backend:
-
+```text
 http://127.0.0.1:8000
-Dashboard:
+```
 
+---
+
+# 🌐 Open the Security Center
+
+Open:
+
+```text
 http://127.0.0.1:8000/dashboard
-API docs:
+```
 
+API documentation:
+
+```text
 http://127.0.0.1:8000/docs
-🌐 Chrome Extension Installation
-Open Google Chrome.
-Visit:
+```
+
+---
+
+# 🧩 Install the Chrome Extension
+
+1. Open Chrome.
+2. Navigate to:
+
+```text
 chrome://extensions/
-Enable Developer mode.
-Click Load unpacked.
-Select:
-SENTINEL/extension
-Pin SENTINEL to the Chrome toolbar.
-Keep the FastAPI backend running.
-The extension communicates with:
+```
 
-http://127.0.0.1:8000
-🧪 Safe Demo
-Do not visit real malicious websites for testing.
+3. Enable **Developer mode**.
+4. Select **Load unpacked**.
+5. Choose:
 
-SENTINEL provides safe synthetic test scenarios.
+```text
+SENTINEL/extension/
+```
+
+6. Pin the SENTINEL extension.
+
+The browser shield can now communicate with the local SENTINEL backend.
+
+---
+
+# 🤖 Optional Ollama Setup
+
+Install Ollama and pull a lightweight local model.
 
 Example:
 
-curl -X POST http://127.0.0.1:8000/api/analyze \
-  -H "Content-Type: application/json" \
-  -d '{"url":"http://paypal-login-security.com/verify/account","login_detected":true,"password_field":true,"email_field":true}'
-The URL above is used only as a synthetic test string.
+```bash
+ollama pull qwen2.5:1.5b
+```
 
-A legitimate test:
+Start Ollama:
 
+```bash
+ollama serve
+```
+
+SENTINEL can then use the local model for threat explanations.
+
+No paid cloud AI API is required for the local AI workflow.
+
+---
+
+# 🔌 API Endpoints
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /` | Backend information |
+| `GET /dashboard` | Security Center |
+| `GET /api/health` | Health check |
+| `GET /api/risk-rules` | Risk rules |
+| `POST /api/analyze` | Analyze URL |
+| `GET /api/history` | Scan history |
+| `GET /api/stats` | Security statistics |
+| `POST /api/identity/register` | Register protected identity |
+| `GET /api/identity/status` | Identity protection status |
+| `POST /api/ai/explain` | Generate AI explanation |
+| `POST /api/analyze/email` | Analyze email |
+| `POST /api/analyze/message` | Analyze message |
+| `POST /api/analyze/qr` | Analyze QR destination |
+
+---
+
+# 🧪 Testing
+
+Run the Python syntax check:
+
+```bash
+python3 -m py_compile backend/main.py
+```
+
+Check the repository:
+
+```bash
+git status
+```
+
+Test the API:
+
+```bash
+curl http://127.0.0.1:8000/api/health
+```
+
+Example URL analysis:
+
+```bash
 curl -X POST http://127.0.0.1:8000/api/analyze \
   -H "Content-Type: application/json" \
   -d '{"url":"https://google.com"}'
-Expected:
+```
 
-Score:          0
-Risk Level:     LOW RISK
-Classification: SAFE
-🦙 Ollama
-Ollama is optional.
+Example suspicious URL:
 
-If Ollama is installed and running locally, SENTINEL can use:
+```bash
+curl -X POST http://127.0.0.1:8000/api/analyze \
+  -H "Content-Type: application/json" \
+  -d '{"url":"http://paypal-login-security.com/verify/account"}'
+```
 
-OLLAMA_BASE_URL=http://127.0.0.1:11434
-OLLAMA_MODEL=qwen2.5:1.5b
-SENTINEL still works when Ollama is unavailable because the system provides deterministic explanation fallbacks.
+---
 
-🧪 Testing Strategy
-SENTINEL should be tested using:
+# 🗺️ Development Roadmap
 
-Safe URLs
-https://google.com
-https://www.google.com
-Synthetic phishing URL
-http://paypal-login-security.com/verify/account
-Identity scenarios
-Login page
-Password field
-Email field
-Phone field
-Protected identity
-AI scenarios
-Ollama available
-Ollama unavailable
-Fallback explanation
-Extension scenarios
-Safe page
-Suspicious page
-High-risk page
-Login page
-Identity form
-🗺️ Development Roadmap
-SENTINEL is organized into exactly 8 development phases.
+SENTINEL is organized into **8 development phases**.
 
-Phase 1 — Risk Intelligence Engine / Browser Shield Foundation
-Status: ✅ 100% Complete
+## Phase 1 — Risk Intelligence Engine
 
-Foundation of the SENTINEL security engine.
+- URL analysis
+- Domain analysis
+- Risk scoring
+- Threat signals
+- Explainable detection
+- SQLite scan history
+- FastAPI foundation
 
-Implemented:
+### Status: ✅ Completed
 
-URL analysis
-URL normalization
-Domain analysis
-Explainable risk scoring
-Risk classification
-Suspicious URL detection
-Security signals
-Brand detection
-Lookalike-domain heuristics
-SQLite scan history
-FastAPI endpoints
-Initial browser-shield integration
-Phase 2 — Real-Time Chrome Protection
-Status: ✅ 100% Complete
+---
 
-Browser-based real-time protection.
+## Phase 2 — Real-Time Chrome Protection
 
-Implemented:
+- Chrome Manifest V3 extension
+- Browser monitoring
+- Real-time URL analysis
+- Login detection
+- Password-field detection
+- Risk popup
+- Browser Shield
 
-Chrome/Chromium extension
-Manifest V3
-URL monitoring
-Automatic page signal collection
-Login detection
-Password-field detection
-Email/phone signal detection
-Backend risk analysis
-Extension popup
-High-risk warning overlay
-Phase 3 — Protected Identity Firewall
-Status: ✅ 100% Complete
+### Status: ✅ Completed
 
-Identity-focused browser protection.
+---
 
-Implemented:
+## Phase 3 — Protected Identity Firewall
 
-Identity field inventory
-Email detection
-Phone detection
-Password/login security signals
-Protected identity concepts
-Per-site identity risk
-Privacy-first identity handling
-Core principle:
+- Identity registration
+- Protected identity state
+- Identity exposure detection
+- Login/password/email/phone signals
+- Privacy-preserving architecture
 
-Detect the identity threat.
-Do not collect the identity secret.
-Phase 4 — Scam DNA + Threat Intelligence
-Status: ✅ 100% Complete
+### Status: ✅ Completed
 
-Campaign-oriented threat intelligence.
+---
 
-Implemented:
+## Phase 4 — Scam DNA + Threat Intelligence
 
-Scam fingerprints
-Suspicious domain patterns
-Threat indicators
-Brand impersonation patterns
-Lookalike patterns
-Related scam characteristics
-Scam DNA matching
-Related-domain clustering
-Phase 5 — Scam Network Graph
-Status: ✅ 100% Complete
+- Scam pattern extraction
+- Brand intelligence
+- Suspicious-domain analysis
+- Campaign similarity
+- Threat intelligence
+- Scam clustering
 
-Relationship-based scam investigation.
+### Status: ✅ Completed
 
-Implemented:
+---
 
-Domain entities
-Brand entities
-URL relationships
-Campaign relationships
-Threat connections
-Related-domain investigation
-Network-oriented threat analysis
-Concept:
+## Phase 5 — Scam Network Graph
 
-Brand
-  ↓
-Domain
-  ↓
-URL
-  ↓
-Campaign
-  ↓
-Identity Target
-Phase 6 — Local AI Security Analyst
-Status: ✅ 100% Complete
+- Domain relationships
+- Brand relationships
+- Campaign relationships
+- Shared indicators
+- Attack-network visualization
 
-Local AI-powered security analysis.
+### Status: ✅ Completed
 
-Implemented:
+---
 
-Ollama integration
-Security explanations
-Risk interpretation
-Threat reasoning
-Recommended actions
-Local AI operation
-Deterministic fallback
-Offline popup explanation fallback
-Phase 7 — Security Center + Advanced Security Tools
-Status: ✅ 100% Complete
+## Phase 6 — Local AI Security Analyst
 
-Centralized security investigation interface.
+- Local Ollama integration
+- Threat explanations
+- Risk summaries
+- Security recommendations
+- AI-assisted investigation
 
-Implemented:
+### Status: ✅ Completed
 
-Security dashboard
-Risk statistics
-Scan history
-Threat investigation
-Identity security
-AI security analysis
-Email analyzer
-Message analyzer
-QR analyzer
-Advanced investigation workflows
-Phase 8 — Complete Integration + Testing + Hackathon Demo
-Status: ✅ 100% Complete
+---
 
-Final integration of all major components.
+## Phase 7 — Security Center + Advanced Security Tools
 
-Chrome Extension
-       │
-       ▼
-FastAPI Risk Engine
-       │
-       ├── Risk Intelligence
-       ├── Identity Firewall
-       ├── Scam DNA
-       ├── Scam Network
-       └── Local AI
-       │
-       ▼
-Security Center
-Completed:
+- Security dashboard
+- Scan history
+- Statistics
+- Email analyzer
+- Message analyzer
+- QR analyzer
+- Screenshot analysis
+- Security reports
+- Advanced threat analytics
 
-Web + extension integration
-Backend integration
-End-to-end workflows
-Risk-engine testing
-Browser protection testing
-Identity testing
-Scam DNA testing
-AI testing
-Dashboard testing
-Safe demo scenarios
-GitHub-ready project structure
-📊 Project Completion
-Component	Status
-Risk Intelligence Engine	✅ Complete
-Browser Shield	✅ Complete
-Chrome Extension	✅ Complete
-Identity Firewall	✅ Complete
-Scam DNA	✅ Complete
-Threat Intelligence	✅ Complete
-Scam Network	✅ Complete
-Local AI Analyst	✅ Complete
-Security Center	✅ Complete
-Advanced Security Tools	✅ Complete
-Web Application	✅ Complete
-Backend API	✅ Complete
-End-to-End Integration	✅ Complete
-Hackathon MVP	✅ Complete
-🎤 Hackathon Demo Flow
-A recommended demo sequence:
+### Status: ✅ Completed
 
-1. Start SENTINEL
-Launch:
+---
 
-FastAPI Backend
-+
-Chrome Extension
-+
-Security Center
-2. Show the Security Center
-Display:
+## Phase 8 — Complete Integration + Hackathon Demo
 
-Security statistics
-Recent scans
-Threat activity
-Identity protection
-Risk distribution
-3. Visit a Safe Website
-Use:
+- End-to-end integration
+- Browser → backend → intelligence pipeline
+- UI refinement
+- Regression testing
+- Performance testing
+- Demo scenarios
+- Documentation
+- GitHub release
 
-https://google.com
-Show:
+### Status: ✅ Completed
 
-LOW RISK
-SAFE
-4. Demonstrate a Synthetic Phishing Scenario
-Use:
+---
 
+# 🎬 Hackathon Demo Flow
+
+A typical SENTINEL demonstration can follow this sequence:
+
+### Step 1 — Open a legitimate website
+
+```text
+google.com
+```
+
+SENTINEL:
+
+```text
+🟢 LOW RISK
+Risk Score: 0
+```
+
+---
+
+### Step 2 — Open a suspicious website
+
+Example:
+
+```text
 paypal-login-security.com
-Show:
+```
 
-DANGEROUS
-PHISHING
-5. Explain the Detection
-Show:
+SENTINEL detects:
 
-Suspicious domain
-HTTP connection
-Login path
-Suspicious keywords
-Brand impersonation
-Identity targeting
-6. Show Scam DNA
-Explain how the system extracts characteristics and finds related suspicious patterns.
+```text
+🔴 DANGEROUS
+Risk Score: 100
+```
 
-7. Show Scam Network Intelligence
-Demonstrate:
+Possible reasons:
 
+```text
+• Suspicious domain
+• Brand impersonation
+• Login page
+• Suspicious keywords
+• Identity collection indicators
+```
+
+---
+
+### Step 3 — Show the Identity Firewall
+
+Demonstrate that SENTINEL detects the presence of identity fields without collecting:
+
+```text
+❌ Password
+❌ OTP
+❌ PIN
+❌ Banking credentials
+```
+
+---
+
+### Step 4 — Show Scam DNA
+
+Demonstrate how multiple suspicious domains can share:
+
+```text
+Same brand
+Same attack pattern
+Same keywords
+Same infrastructure indicators
+```
+
+---
+
+### Step 5 — Show Scam Network
+
+Visualize:
+
+```text
+Domain
+   ↓
 Brand
- ↓
-Suspicious Domain
- ↓
-URL
- ↓
+   ↓
 Campaign
- ↓
-Identity Target
-8. Demonstrate the AI Security Analyst
-Ask:
+   ↓
+Related Domains
+   ↓
+Attack Network
+```
 
+---
+
+### Step 6 — Ask the AI Security Analyst
+
+The local AI explains:
+
+```text
 Why is this website dangerous?
 
-Show the local AI explanation.
+What indicators were detected?
 
-9. Finish With the Core Message
-SENTINEL doesn't just detect the scam. It helps explain the attack, identify related threats, and protect the user's digital identity before it's too late.
+What should the user do?
+```
 
-🏆 Why SENTINEL?
-Most basic phishing tools answer one question:
+---
 
-“Is this URL safe?”
+# 🏆 Why SENTINEL?
 
-SENTINEL aims to answer several:
+Most security tools answer:
 
-Is this website dangerous?
-        ↓
-Why is it dangerous?
-        ↓
-Is it targeting my identity?
-        ↓
-Does it resemble other scams?
-        ↓
-What campaign could it belong to?
-        ↓
-What should I do?
-That transforms SENTINEL from a simple URL checker into a:
+> **“Is this website dangerous?”**
 
-Personal Digital Identity Firewall + Scam Intelligence Platform
+SENTINEL attempts to answer a broader question:
 
-⚠️ Limitations
-SENTINEL is a hackathon MVP.
+> **“Is this website trying to compromise my digital identity, what evidence supports that conclusion, and is it connected to a larger scam campaign?”**
 
-Its threat intelligence and detection mechanisms are primarily heuristic/rule-based and should not be treated as a replacement for:
+SENTINEL combines:
 
-Commercial threat-intelligence platforms
-Enterprise browser security
-Endpoint detection and response
-Professional incident response
-Security operations centers
-Production-grade anti-phishing infrastructure
-The project is intended for educational, research, demonstration, and authorized security-testing purposes.
+```text
+Browser Protection
+       +
+Risk Intelligence
+       +
+Identity Protection
+       +
+Threat Intelligence
+       +
+Scam DNA
+       +
+Scam Network
+       +
+Local AI
+```
 
-🔒 Responsible Use
-Only analyze websites, systems, and data that you are authorized to inspect.
+into one security platform.
 
-Do not use SENTINEL to:
+---
 
-Collect credentials
-Capture authentication tokens
-Intercept private communications
-Bypass security controls
-Attack systems without authorization
-📜 License
-This project is intended as a hackathon and educational cybersecurity project.
+# 🔒 Privacy by Design
 
-Use responsibly and only against systems and data you are authorized to analyze.
+SENTINEL is designed with privacy as a core principle.
+
+The system should **never collect or store**:
+
+- Passwords
+- OTPs
+- PINs
+- Banking credentials
+- Authentication codes
+
+Browser detection focuses on the **presence of sensitive input fields**, rather than their contents.
+
+Where identity information is required for future versions, it should be protected through hashing/tokenization and local processing wherever possible.
+
+---
+
+# ⚠️ Limitations
+
+SENTINEL is an experimental security platform and should not be considered a replacement for:
+
+- Antivirus software
+- Enterprise security systems
+- Browser security mechanisms
+- Security operations centers
+- Professional threat intelligence platforms
+
+Risk scores are based on available signals and may produce:
+
+- False positives
+- False negatives
+- Incomplete campaign relationships
+
+Real-world threat intelligence would require additional external feeds and continuously updated datasets.
+
+---
+
+# ⚖️ Responsible Use
+
+SENTINEL is intended for:
+
+- Cybersecurity education
+- Defensive security research
+- Scam awareness
+- Threat investigation
+- Personal digital safety
+- Hackathon demonstrations
+
+Do not use SENTINEL to conduct unauthorized attacks, credential harvesting, surveillance, or other malicious activities.
+
+---
+
+# 📌 Project Status
+
+| Component | Status |
+|---|---|
+| FastAPI Backend | ✅ |
+| Risk Engine | ✅ |
+| SQLite Storage | ✅ |
+| Chrome Extension | ✅ |
+| Browser Shield | ✅ |
+| Brand Detection | ✅ |
+| Identity Firewall | ✅ |
+| Scam DNA | ✅ |
+| Scam Network | ✅ |
+| Local AI Analyst | ✅ |
+| Security Center | ✅ |
+| Advanced Analyzers | ✅ |
+| Integration | ✅ |
+| Documentation | ✅ |
+
+---
+
+# 👨‍💻 Author
+
+**Nidhiraj**
+
+BE — Artificial Intelligence & Machine Learning Engineering
+
+GitHub:
+
+```text
+https://github.com/nidhiraj029
+```
+
+Project:
+
+```text
+https://github.com/nidhiraj029/SENTINEL
+```
+
+---
+
+# 📄 License
+
+This project is intended primarily for educational, research, and hackathon purposes.
+
+Add an appropriate open-source license before distributing SENTINEL as a production security product.
