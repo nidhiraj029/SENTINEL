@@ -244,6 +244,7 @@ def analyze(req: AnalyzeRequest):
     )
 
     if not is_trusted:
+<<<<<<< HEAD
         if req.password_field and (req.email_field or req.phone_field):
             add(reasons, "High-risk identity harvesting pattern", "critical", 15)
             score += 15
@@ -254,6 +255,8 @@ def analyze(req: AnalyzeRequest):
             add(reasons, "Suspicious account creation form", "medium", 10)
             score += 10
 
+=======
+>>>>>>> b0b3bf3 (fix: prevent trusted domain false positives)
         brands = looks_like_brand(domain)
         if brands:
             for brand in brands[:2]:
