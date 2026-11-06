@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SENTINEL Security Center</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#060a12;color:#e5e7eb;font-family:Inter,Arial,sans-serif}.wrap{max-width:1200px;margin:auto;padding:32px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}.brand{display:flex;gap:12px;align-items:center}.logo{width:48px;height:48px;border-radius:14px;background:#111827;display:grid;place-items:center;font-size:26px}.brand h1{margin:0;font-size:24px}.brand p{margin:4px 0;color:#64748b;font-size:11px}.online{color:#86efac;font-size:12px}.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.stat,.panel{background:#0c1320;border:1px solid #1c2839;border-radius:16px}.stat{padding:18px}.stat small{color:#64748b}.stat strong{display:block;font-size:28px;margin-top:8px}.layout{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-top:16px}.panel{padding:20px}.panel h2{font-size:15px;margin:0 0 16px}.risk{font-size:72px;font-weight:900}.bar{height:10px;background:#172235;border-radius:99px;overflow:hidden}.bar div{height:100%;background:#60a5fa}.row{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid #172235;font-size:12px}.safe{color:#86efac}.warn{color:#facc15}.danger{color:#f87171}.tools{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}.tool{padding:16px;border:1px solid #263449;background:#0f1724;border-radius:12px}.tool strong{display:block;margin-bottom:5px}.tool span{font-size:11px;color:#64748b}.input{display:flex;gap:8px}.input input{flex:1;background:#080e18;border:1px solid #263449;color:white;padding:11px;border-radius:9px}.input button{background:#f8fafc;border:0;border-radius:9px;padding:0 16px;font-weight:800}.result{margin-top:14px}.reason{background:#121c2c;padding:8px;border-radius:8px;margin:5px 0;font-size:12px}@media(max-width:800px){.grid{grid-template-columns:repeat(2,1fr)}.layout{grid-template-columns:1fr}.tools{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><div class="logo">🛡️</div><div><h1>SENTINEL</h1><p>PERSONAL DIGITAL IDENTITY FIREWALL</p></div></div>
+    <div class="online">● Protection Active</div>
+  </div>
+
+  <div class="grid">
+    <div class="stat"><small>SITES ANALYZED</small><strong id="total">0</strong></div>
+    <div class="stat"><small>SAFE</small><strong id="safe">0</strong></div>
+    <div class="stat"><small>SUSPICIOUS</small><strong id="suspicious">0</strong></div>
+    <div class="stat"><small>DANGEROUS</small><strong id="dangerous">0</strong></div>
+    <div class="stat"><small>THREATS PREVENTED</small><strong id="prevented">0</strong></div>
+  </div>
+
+  <div class="layout">
+    <section class="panel">
+      <h2>Manual Threat Scanner</h2>
+      <div class="input"><input id="url" placeholder="Enter a URL to analyze"><button onclick="scan()">SCAN</button></div>
+      <div id="result" class="result"></div>
+    </section>
+    <section class="panel">
+      <h2>Digital Risk Score</h2>
+      <div id="risk" class="risk">0</div>
+      <div class="bar"><div id="riskbar" style="width:0%"></div></div>
+      <p style="color:#64748b;font-size:11px">Heuristic SENTINEL score based on recent threat activity.</p>
+    </section>
+  </div>
+
+  <section class="panel" style="margin-top:16px">
+    <h2>Security Tools</h2>
+    <div class="tools">
+      <div class="tool"><strong>🧬 Scam DNA</strong><span>Classify suspicious campaigns and patterns.</span></div>
+      <div class="tool"><strong>🔐 Identity Shield</strong><span>Protect sensitive identity requests.</span></div>
+      <div class="tool"><strong>🤖 AI Analyst</strong><span>Explain threats using local AI or fallback.</span></div>
+      <div class="tool"><strong>🕸️ Threat Network</strong><span>Group related indicators into campaigns.</span></div>
+      <div class="tool"><strong>📧 Email Analyzer</strong><span>Analyze pasted suspicious messages.</span></div>
+      <div class="tool"><strong>💬 SMS Analyzer</strong><span>Detect common social-engineering signals.</span></div>
+    </div>
+  </section>
+
+  <section class="panel" style="margin-top:16px">
+    <h2>Recent Activity</h2>
+    <div id="history"></div>
+  </section>
+</div>
+
+<script>
+const API="http://127.0.0.1:8000";
+async function load(){
+  const [s,h]=await Promise.all([
+    fetch(API+"/api/stats").then(r=>r.json()),
+    fetch(API+"/api/history?limit=12").then(r=>r.json())
+  ]);
+  for(const k of ["total","safe","suspicious","dangerous","prevented"]) document.getElementById(k).textContent=s[k]||0;
+  const risk=Math.min(100,Math.round((s.dangerous*12+s.suspicious*5+s.high*3)||0));
+  document.getElementById("risk").textContent=risk;
+  document.getElementById("riskbar").style.width=risk+"%";
+  document.getElementById("history").innerHTML=h.length?h.map(x=>`
+    <div class="row">
+      <span>${escapeHtml(x.domain||x.url)}</span>
+      <span class="${x.score>=76?'danger':x.score>=31?'warn':'safe'}">${x.score}/100 · ${x.classification}</span>
+    </div>`).join(""):"No scans yet.";
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+async function scan(){
+  const url=document.getElementById("url").value.trim();
+  if(!url)return;
+  const r=await fetch(API+"/api/analyze",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url})}).then(x=>x.json());
+  document.getElementById("result").innerHTML=`
+    <div style="font-size:34px;font-weight:900">${r.score}/100</div>
+    <div>${escapeHtml(r.level)} · ${escapeHtml(r.classification)}</div>
+    ${(r.reasons||[]).slice(0,8).map(x=>`<div class="reason">⚠ ${escapeHtml(x.signal)} <span style="color:#64748b">+${x.points}</span></div>`).join("")}`;
+  load();
+}
+load();
+setInterval(load,5000);
+</script>
+</body>
+</html>

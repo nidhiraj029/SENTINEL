@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SENTINEL</title>
+<link rel="stylesheet" href="popup.css">
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="shield">🛡️</div>
+    <div><h1>SENTINEL</h1><p>Personal Digital Identity Firewall</p></div>
+  </header>
+  <div class="status"><span></span> Protection Active</div>
+  <div class="card"><label>CURRENT WEBSITE</label><strong id="domain">Checking...</strong></div>
+  <div class="scoreCard">
+    <label>RISK SCORE</label>
+    <div id="score">--</div>
+    <strong id="level">Analyzing...</strong>
+    <div id="classification"></div>
+  </div>
+  <div id="reasons"></div>
+  <button id="scan">SCAN CURRENT SITE</button>
+  <a href="http://127.0.0.1:8000/dashboard" target="_blank">Open Security Center ↗</a>
+  <p id="message"></p>
+</div>
+<script src="popup.js"></script>
+</body>
+</html>
