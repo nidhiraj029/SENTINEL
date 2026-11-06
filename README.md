@@ -20,6 +20,9 @@ SENTINEL is a hackathon-ready cybersecurity MVP combining a Chrome Manifest V3 e
 - Automatic page signal collection
 - Warning overlay for high-risk pages
 - Local Ollama explanation with deterministic fallback
+- Popup identity field inventory and per-site identity risk
+- Local Scam DNA fingerprint matching and related-domain clustering
+- Offline popup explanation fallback when the local API is unavailable
 - Safe demo scenarios
 
 ## Privacy

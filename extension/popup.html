@@ -16,7 +16,7 @@
       </div>
       <div class="status-indicator" title="Protection is actively monitoring your browsing">
         <span class="status-dot"></span>
-        <span class="status-label">ACTIVE</span>
+        <span class="status-label">IDENTITY FIREWALL ACTIVE</span>
       </div>
     </header>
 
@@ -32,6 +32,13 @@
         <span class="identity-icon">🔐</span>
         <span id="identity-text">Identity Fields Monitored</span>
       </div>
+      <div id="identity-details" class="identity-details">Identity fields: checking this page…</div>
+    </div>
+
+    <div class="campaign-card">
+      <div class="section-header"><span>SCAM DNA</span><span id="seen-before" class="seen-badge">Checking history</span></div>
+      <div id="campaign-info" class="campaign-info">Campaign fingerprint will appear after scan.</div>
+      <div id="related-domains" class="related-domains"></div>
     </div>
 
     <div class="score-card" id="score-card">
@@ -62,6 +69,8 @@
       <button id="scan-btn" class="primary-btn">
         <span id="scan-text">SCAN CURRENT SITE</span>
       </button>
+      <button id="explain-btn" class="secondary-btn">WHY IS THIS DANGEROUS?</button>
+      <div id="explanation" class="explanation hidden" aria-live="polite"></div>
       <a href="http://127.0.0.1:8000/dashboard" target="_blank" class="dashboard-link">
         Open Security Center ↗
       </a>

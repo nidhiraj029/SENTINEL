@@ -6,15 +6,21 @@ function isRestrictedUrl(url) {
 
 function extractPageSignals() {
   const inputs = Array.from(document.querySelectorAll("input"));
-  const passwordField = inputs.some(i => i.type === "password");
-  const emailField = inputs.some(i =>
-    i.type === "email" ||
-    /email|mail|user(name)?/i.test(`${i.name} ${i.id} ${i.autocomplete} ${i.placeholder}`)
-  );
-  const phoneField = inputs.some(i =>
-    i.type === "tel" ||
-    /phone|mobile|tel|contact/i.test(`${i.name} ${i.id} ${i.autocomplete} ${i.placeholder}`)
-  );
+  const fieldMeta = inputs.map(i => {
+    const context = `${i.name} ${i.id} ${i.autocomplete} ${i.placeholder} ${i.getAttribute("aria-label") || ""}`;
+    const label = i.labels?.[0]?.innerText || "";
+    const hint = `${context} ${label}`.trim();
+    const types = [];
+    if (i.type === "password" || /pass(word)?|current-password|new-password/i.test(hint)) types.push("password");
+    if (i.type === "email" || /email|e-mail|mail address/i.test(hint)) types.push("email");
+    if (i.type === "tel" || /phone|mobile|telephone|tel number/i.test(hint)) types.push("phone");
+    if (/user(name)?|account|customer.?id|member.?id/i.test(hint)) types.push("account");
+    return { types: [...new Set(types)], hint: hint.slice(0, 80) };
+  }).filter(f => f.types.length);
+  const fieldTypes = new Set(fieldMeta.flatMap(f => f.types));
+  const passwordField = fieldTypes.has("password");
+  const emailField = fieldTypes.has("email");
+  const phoneField = fieldTypes.has("phone");
 
   const pageText = (document.body?.innerText || "").slice(0, 10000);
   const loginDetected =
@@ -28,6 +34,15 @@ function extractPageSignals() {
     .filter((v, i, a) => a.indexOf(v) === i)
     .slice(0, 10);
 
+  // Account creation detection — look for register/signup patterns
+  const accountCreation =
+    /register|sign[\s-]?up|create[\s-]?account|join[\s-]?now|new[\s-]?account/i.test(pageText) ||
+    inputs.some(i =>
+      /name|first.?name|last.?name|dob|birthday|zip|postal|country|gender/i.test(
+        `${i.name} ${i.id} ${i.autocomplete} ${i.placeholder}`
+      )
+    );
+
   const formActions = Array.from(document.forms)
     .map(f => f.action)
     .filter(Boolean)
@@ -39,9 +54,12 @@ function extractPageSignals() {
     password_field: passwordField,
     email_field: emailField,
     phone_field: phoneField,
+    account_creation: accountCreation,
     page_title: document.title.slice(0, 160),
     visible_text_signals: visibleSignals,
-    form_actions: formActions
+    form_actions: formActions,
+    identity_fields_detected: [...fieldTypes],
+    identity_field_count: fieldMeta.length
   };
 }
 
@@ -237,6 +255,17 @@ async function runPageScan() {
     }
   );
 }
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === "SENTINEL_SCAN_NOW") {
+    const payload = extractPageSignals();
+    chrome.runtime.sendMessage({type:"SENTINEL_CONTENT_SIGNALS", payload}, response => {
+      if (chrome.runtime.lastError) sendResponse({success:false});
+      else sendResponse({success:true, result:response?.result || null});
+    });
+    return true;
+  }
+});
 
 // Listen for push notifications from background worker
 chrome.runtime.onMessage.addListener((message) => {

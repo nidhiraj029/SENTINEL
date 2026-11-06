@@ -117,6 +117,8 @@ class AnalyzeRequest(BaseModel):
     page_title: str = ""
     visible_text_signals: list[str] = Field(default_factory=list)
     redirect_count: int = 0
+    identity_fields_detected: list[str] = Field(default_factory=list)
+    identity_field_count: int = 0
 
 class IdentityRequest(BaseModel):
     identity_type: str
@@ -287,6 +289,39 @@ def analyze(req: AnalyzeRequest):
     classification = classify(score, reasons, domain)
     confidence = round(min(0.99, max(0.15, score / 100)), 2)
 
+    # Campaign DNA is derived only from URL structure and coarse risk signals.
+    # No form values or user identity data are stored or included.
+    fingerprint_parts = sorted({
+        re.sub(r"[^a-z0-9]+", "_", r["signal"].lower()).strip("_")
+        for r in reasons
+        if any(word in r["signal"].lower() for word in ("brand", "login", "password", "identity", "tld", "hyphen", "subdomain", "urgency"))
+    })
+    path_tokens = sorted(set(re.findall(r"[a-z]{4,}", (parsed.path + " " + parsed.query).lower())) & set(KEYWORDS))
+    dna_source = json.dumps({"classification": classification, "signals": fingerprint_parts, "path": path_tokens}, sort_keys=True)
+    campaign_fingerprint = hashlib.sha256(dna_source.encode()).hexdigest()[:16]
+
+    con = db()
+    prior_rows = con.execute("SELECT domain, classification, reasons, url FROM scans ORDER BY id DESC LIMIT 500").fetchall()
+    related_domains = []
+    seen_before = False
+    for row in prior_rows:
+        old_domain = row["domain"] or ""
+        if old_domain == domain:
+            seen_before = True
+        try:
+            old_url = urlparse(row["url"])
+            old_path_tokens = sorted(set(re.findall(r"[a-z]{4,}", (old_path := (old_url.path + " " + old_url.query)).lower())) & set(KEYWORDS))
+            old_signals = json.loads(row["reasons"] or "[]")
+            old_parts = sorted({re.sub(r"[^a-z0-9]+", "_", r["signal"].lower()).strip("_") for r in old_signals if any(word in r["signal"].lower() for word in ("brand", "login", "password", "identity", "tld", "hyphen", "subdomain", "urgency"))})
+            old_fp = hashlib.sha256(json.dumps({"classification": row["classification"], "signals": old_parts, "path": old_path_tokens}, sort_keys=True).encode()).hexdigest()[:16]
+        except Exception:
+            continue
+        if old_fp == campaign_fingerprint:
+            if old_domain == domain:
+                seen_before = True
+            elif old_domain and old_domain not in related_domains:
+                related_domains.append(old_domain)
+
     result = {
         "url": req.url,
         "domain": domain,
@@ -308,9 +343,13 @@ def analyze(req: AnalyzeRequest):
             "account_creation": bool(req.account_creation),
         },
         "login_detected": login_detected,
+        "campaign_fingerprint": campaign_fingerprint,
+        "related_domains": related_domains[:8],
+        "seen_before": seen_before,
+        "identity_fields_detected": sorted(set(req.identity_fields_detected)),
+        "identity_field_count": req.identity_field_count,
     }
 
-    con = db()
     con.execute(
         "INSERT INTO scans(url,domain,score,level,classification,reasons,timestamp) VALUES(?,?,?,?,?,?,?)",
         (req.url, domain, score, level, classification, json.dumps(reasons), result["timestamp"]),
@@ -382,8 +421,8 @@ def identity_status():
 @app.post("/api/ai/explain")
 async def ai_explain(req: AIRequest):
     base = (
-        f"This website received a SENTINEL risk score of {req.score}/100 and was classified as "
-        f"{req.classification}. Signals include: {', '.join(req.signals[:8]) or 'none'}. "
+        f"This website received a SENTINEL risk score of {req.score}/100 and was classified as {req.classification}. "
+        f"Signals include: {', '.join(req.signals[:8]) or 'none'}. "
         "Do not enter passwords or other sensitive credentials until the site is verified."
     )
     ollama_url = os.getenv("OLLAMA_BASE_URL", "http://127.0.0.1:11434")
@@ -403,6 +442,11 @@ async def ai_explain(req: AIRequest):
             data = r.json()
             text = data.get("response", "").strip()
             if text:
+                sentences = re.split(r"(?<=[.!?])\s+", text)
+                text = " ".join(sentences[:3]).strip()
+                while len(sentences) < 3:
+                    sentences.append("Avoid entering sensitive information until the site is verified.")
+                text = " ".join(sentences[:3]).strip()
                 return {"provider": "ollama", "model": model, "explanation": text}
     except Exception:
         pass

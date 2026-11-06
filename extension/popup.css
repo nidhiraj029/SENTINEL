@@ -77,11 +77,23 @@ h1 {
 }
 
 .status-label {
-  font-size: 9px;
+  font-size: 8px;
   font-weight: 800;
   color: #86efac;
   letter-spacing: 0.5px;
 }
+
+.identity-details { margin-top: 7px; color: #94a3b8; font-size: 10px; line-height: 1.5; }
+.campaign-card { background:#0e1524; border:1px solid #1c2638; border-radius:12px; padding:11px 12px; }
+.campaign-card .section-header { margin-bottom:7px; }
+.campaign-info { color:#cbd5e1; font-size:10px; overflow-wrap:anywhere; }
+.seen-badge { color:#94a3b8; font-size:9px; }
+.seen-badge.seen { color:#fbbf24; }
+.related-domains { color:#94a3b8; font-size:10px; margin-top:5px; overflow-wrap:anywhere; }
+.secondary-btn { width:100%; padding:9px; border:1px solid #334155; border-radius:8px; background:#111827; color:#bae6fd; font-size:11px; font-weight:800; cursor:pointer; }
+.secondary-btn:disabled { opacity:.6; cursor:wait; }
+.explanation { padding:9px; border:1px solid #263449; border-radius:8px; color:#cbd5e1; background:#0b1220; font-size:10px; line-height:1.5; }
+.explanation.hidden { display:none; }
 
 .site-card, .score-card {
   background: #0e1524;
