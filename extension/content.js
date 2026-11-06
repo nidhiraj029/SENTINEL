@@ -89,4 +89,14 @@ function showWarning(result) {
   document.getElementById("sentinel-continue").onclick = () => overlay.remove();
 }
 
+chrome.runtime.onMessage.addListener((message) => {
+  if (message.type !== "SENTINEL_SCAN_RESULT") return;
+
+  const result = message.result;
+
+  if (result && result.score >= 76) {
+    showWarning(result);
+  }
+});
+
 scan();
