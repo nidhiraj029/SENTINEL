@@ -94,6 +94,11 @@ def init_db():
         enabled INTEGER DEFAULT 1,
         created_at INTEGER
     );
+    CREATE TABLE IF NOT EXISTS settings (
+        key TEXT PRIMARY KEY,
+        value TEXT
+    );
+    INSERT OR IGNORE INTO settings(key, value) VALUES('protection_level', 'PROTECT');
     """)
     con.commit()
     con.close()
@@ -106,6 +111,7 @@ class AnalyzeRequest(BaseModel):
     password_field: bool = False
     email_field: bool = False
     phone_field: bool = False
+    account_creation: bool = False
     brand: str | None = None
     protected_identity: bool = False
     page_title: str = ""
@@ -137,10 +143,14 @@ def add(reasons, signal, severity, points):
 
 def looks_like_brand(domain: str):
     hits = []
-    compact = re.sub(r"[^a-z0-9]", "", domain)
+    clean = re.sub(r"^www\.", "", domain)
+    compact = re.sub(r"[^a-z0-9]", "", clean)
     for brand, aliases in BRANDS.items():
         for alias in aliases:
-            if alias in domain and domain != f"{alias}.com":
+            official = f"{alias}.com"
+            if clean == official or clean.endswith(f".{official}"):
+                continue
+            if alias in clean:
                 hits.append(brand)
             if alias.replace("o", "0") in compact or alias.replace("l", "1") in compact:
                 hits.append(brand)
@@ -226,16 +236,43 @@ def analyze(req: AnalyzeRequest):
         add(reasons, f"Suspicious keyword: {kw}", "medium", WEIGHTS["suspicious_keyword"])
         score += WEIGHTS["suspicious_keyword"]
 
-    brands = looks_like_brand(domain)
-    if brands:
-        official_like = any(domain == f"{b}.com" for b in brands)
-        if not official_like:
+    clean_domain = re.sub(r"^www\.", "", domain)
+    is_trusted = any(
+        clean_domain == f"{alias}.com" or clean_domain.endswith(f".{alias}.com")
+        for aliases in BRANDS.values()
+        for alias in aliases
+    )
+
+    if not is_trusted:
+        if req.password_field and (req.email_field or req.phone_field):
+            add(reasons, "High-risk identity harvesting pattern", "critical", 15)
+            score += 15
+        elif req.email_field and req.phone_field:
+            add(reasons, "Multi-field identity harvesting pattern", "high", 10)
+            score += 10
+        if req.account_creation and score >= 30:
+            add(reasons, "Suspicious account creation form", "medium", 10)
+            score += 10
+
+        brands = looks_like_brand(domain)
+        if brands:
             for brand in brands[:2]:
                 add(reasons, f"Possible {brand.title()} impersonation", "critical", WEIGHTS["brand_impersonation"])
                 score += WEIGHTS["brand_impersonation"]
-            if any(domain.replace("-", "").replace("0", "o").replace("1", "l").find(b) >= 0 for b in brands):
+            if any(clean_domain.replace("-", "").replace("0", "o").replace("1", "l").find(b) >= 0 for b in brands):
                 add(reasons, "Lookalike brand pattern", "high", WEIGHTS["lookalike_brand"])
                 score += WEIGHTS["lookalike_brand"]
+
+    if req.password_field and not is_trusted:
+        identity_risk = "HIGH"
+    elif (req.email_field and req.phone_field) and not is_trusted:
+        identity_risk = "HIGH"
+    elif (req.email_field or req.phone_field or req.password_field) and not is_trusted:
+        identity_risk = "MEDIUM"
+    elif req.email_field or req.phone_field or req.password_field:
+        identity_risk = "LOW"
+    else:
+        identity_risk = "SAFE"
 
     score = min(score, 100)
     if score <= 30:
@@ -260,8 +297,16 @@ def analyze(req: AnalyzeRequest):
         "reasons": reasons,
         "signals": [r["signal"] for r in reasons],
         "timestamp": int(time.time()),
-        "identity_detected": bool(req.email_field or req.phone_field),
+        "identity_detected": bool(req.email_field or req.phone_field or req.password_field),
         "identity_protected": req.protected_identity,
+        "identity_risk": identity_risk,
+        "identity_fields": {
+            "email": bool(req.email_field),
+            "phone": bool(req.phone_field),
+            "password": bool(req.password_field),
+            "login": bool(login_detected),
+            "account_creation": bool(req.account_creation),
+        },
         "login_detected": login_detected,
     }
 
@@ -392,3 +437,26 @@ async def analyze_qr(file: UploadFile = File(...)):
         "message": "QR image received. For the hackathon MVP, decode the QR locally and submit its destination URL to /api/analyze.",
         "filename": file.filename,
     }
+
+@app.get("/api/settings")
+def get_settings():
+    con = db()
+    rows = con.execute("SELECT key, value FROM settings").fetchall()
+    con.close()
+    return {r["key"]: r["value"] for r in rows}
+
+@app.post("/api/settings")
+def update_settings(data: dict):
+    allowed = {"protection_level"}
+    con = db()
+    for k, v in data.items():
+        if k in allowed:
+            con.execute("INSERT OR REPLACE INTO settings(key,value) VALUES(?,?)", (k, str(v)))
+    con.commit()
+    con.close()
+    return {"status": "updated"}
+
+@app.post("/api/analyze/url")
+def analyze_url_simple(req: AnalyzeRequest):
+    return analyze(req)
+

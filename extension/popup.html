@@ -1,30 +1,76 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SENTINEL</title>
-<link rel="stylesheet" href="popup.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SENTINEL</title>
+  <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-<div class="app">
-  <header>
-    <div class="shield">🛡️</div>
-    <div><h1>SENTINEL</h1><p>Personal Digital Identity Firewall</p></div>
-  </header>
-  <div class="status"><span></span> Protection Active</div>
-  <div class="card"><label>CURRENT WEBSITE</label><strong id="domain">Checking...</strong></div>
-  <div class="scoreCard">
-    <label>RISK SCORE</label>
-    <div id="score">--</div>
-    <strong id="level">Analyzing...</strong>
-    <div id="classification"></div>
+  <div class="app">
+    <header>
+      <div class="shield-badge">🛡️</div>
+      <div class="title-group">
+        <h1>SENTINEL</h1>
+        <p>Personal Digital Identity Firewall</p>
+      </div>
+      <div class="status-indicator" title="Protection is actively monitoring your browsing">
+        <span class="status-dot"></span>
+        <span class="status-label">ACTIVE</span>
+      </div>
+    </header>
+
+    <div class="site-card">
+      <div class="card-label-row">
+        <span class="card-label">CURRENT TARGET</span>
+        <span id="security-protocol" class="protocol-badge">SECURE</span>
+      </div>
+      <div class="domain-row">
+        <strong id="domain">Checking...</strong>
+      </div>
+      <div id="identity-banner" class="identity-banner hidden">
+        <span class="identity-icon">🔐</span>
+        <span id="identity-text">Identity Fields Monitored</span>
+      </div>
+    </div>
+
+    <div class="score-card" id="score-card">
+      <div class="card-label-row center">
+        <span class="card-label">DIGITAL RISK SCORE</span>
+      </div>
+      <div class="score-display">
+        <span id="score" class="score-number">--</span>
+        <span class="score-total">/100</span>
+      </div>
+      <div class="badge-row">
+        <span id="level" class="level-badge">ANALYZING</span>
+      </div>
+      <div id="classification" class="classification-tag">Scanning page signals...</div>
+    </div>
+
+    <div class="threats-section">
+      <div class="section-header">
+        <span>DETECTED SIGNALS</span>
+        <span id="signal-count" class="signal-count">0</span>
+      </div>
+      <div id="reasons" class="reasons-list">
+        <div class="reason placeholder">Checking threat intelligence...</div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="scan-btn" class="primary-btn">
+        <span id="scan-text">SCAN CURRENT SITE</span>
+      </button>
+      <a href="http://127.0.0.1:8000/dashboard" target="_blank" class="dashboard-link">
+        Open Security Center ↗
+      </a>
+    </div>
+
+    <footer>
+      <span id="message">SENTINEL Shield v1.0 • Local AI Engine</span>
+    </footer>
   </div>
-  <div id="reasons"></div>
-  <button id="scan">SCAN CURRENT SITE</button>
-  <a href="http://127.0.0.1:8000/dashboard" target="_blank">Open Security Center ↗</a>
-  <p id="message"></p>
-</div>
-<script src="popup.js"></script>
+  <script src="popup.js"></script>
 </body>
 </html>
